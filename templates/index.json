@@ -1,0 +1,7 @@
+{
+  "sections": {
+    "hero": { "type": "nebula-hero", "settings": {} },
+    "main": { "type": "nebula-product", "settings": {} }
+  },
+  "order": ["hero", "main"]
+}

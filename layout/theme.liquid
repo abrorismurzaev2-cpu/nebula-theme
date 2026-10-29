@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ page_title }}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+  {% if page_description %}<meta name="description" content="{{ page_description | escape }}">{% endif %}
+  {{ content_for_header }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {{ 'nebula.css' | asset_url | stylesheet_tag }}
+</head>
+<body class="n-body">
+  <header class="n-header">
+    <a class="n-logo" href="{{ routes.root_url }}">{{ shop.name | default: 'NEBULA' | upcase }}</a>
+  </header>
+  <main id="MainContent">{{ content_for_layout }}</main>
+  <footer class="n-footer">
+    <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | default: 'Nebula' }}</p>
+    <p>
+      <a href="/policies/shipping-policy">Shipping</a>
+      <a href="/policies/refund-policy">Returns</a>
+      <a href="/policies/privacy-policy">Privacy</a>
+    </p>
+  </footer>
+</body>
+</html>
