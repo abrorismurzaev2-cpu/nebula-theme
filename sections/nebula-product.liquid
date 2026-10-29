@@ -1,8 +1,13 @@
 {%- assign v = product.selected_or_first_available_variant -%}
 {%- if v == blank -%}{%- assign v = product.variants.first -%}{%- endif -%}
+{%- assign show_price = v.price | money -%}
+{%- if v.compare_at_price > v.price -%}
+  {%- assign show_compare = v.compare_at_price | money -%}
+  {%- assign show_save = v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round -%}
+{%- endif -%}
 
 <section class="product" id="product">
-  <div class="product__ann">Free US shipping on orders $50+ · Standard delivery 5–10 business days</div>
+  <div class="product__ann">Free US shipping on orders $50+ · Delivery 5–10 business days</div>
 
   <div class="product__grid">
     <div class="product__media">
@@ -21,7 +26,6 @@
           </button>
         {% else %}
           <button type="button" class="product__thumb is-active" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/97d0d0e1-1ff1-484e-b507-f3111d8e9e84_trans.jpg?v=1793297579"><img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/97d0d0e1-1ff1-484e-b507-f3111d8e9e84_trans.jpg?v=1793297579&width=150" alt="" width="70" height="70"></button>
-          <button type="button" class="product__thumb" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/8aa103ae-68f9-46d8-a173-c3e915134f83_trans.jpg?v=1793297579"><img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/8aa103ae-68f9-46d8-a173-c3e915134f83_trans.jpg?v=1793297579&width=150" alt="" width="70" height="70"></button>
         {% endfor %}
       </div>
     </div>
@@ -31,17 +35,19 @@
       <h1 class="product__title">{{ product.title }}</h1>
       <p class="product__rating">★★★★★ <span>2,184 reviews</span></p>
 
-      <div class="product__price-box" id="PriceBox">
-        <p class="product__price-label">Your price</p>
-        <div class="product__price-row">
-          <span class="product__price" id="Price">{{ v.price | money }}</span>
-          {% if v.compare_at_price > v.price %}
-            <span class="product__compare" id="Compare">{{ v.compare_at_price | money }}</span>
-            {% assign save = v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round %}
-            <span class="product__save" id="Save">SAVE {{ save }}%</span>
+      <div id="PriceBox" style="background:#1a1030;border:3px solid #fbbf24;border-radius:16px;padding:20px;margin:16px 0;">
+        <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;">YOUR PRICE</div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+          <span id="Price" style="font-size:48px;font-weight:900;line-height:1;color:#ffffff;text-decoration:none;">{{ show_price }}</span>
+          {% if show_compare %}
+            <span id="Compare" style="font-size:20px;font-weight:500;color:#9ca3af;text-decoration:line-through;">{{ show_compare }}</span>
+            <span id="Save" style="background:#fbbf24;color:#111;font-size:14px;font-weight:800;padding:6px 10px;border-radius:6px;">SAVE {{ show_save }}%</span>
+          {% else %}
+            <span id="Compare" style="display:none;"></span>
+            <span id="Save" style="display:none;"></span>
           {% endif %}
         </div>
-        <p class="product__price-note">One-time purchase · No subscription</p>
+        <div style="margin-top:10px;font-size:13px;color:#9ca3af;">One-time purchase · No subscription</div>
       </div>
 
       <p class="product__urgency">🔥 Popular pick — many customers choose this pack</p>
@@ -56,7 +62,7 @@
                 data-price="{{ variant.price | money }}"
                 data-compare="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% endif %}"
                 data-save="{% if variant.compare_at_price > variant.price %}{% assign s = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round %}SAVE {{ s }}%{% endif %}"
-              >{{ variant.title }}</button>
+              >{{ variant.title }} — {{ variant.price | money }}</button>
             {% endfor %}
           </div>
         </div>
@@ -72,22 +78,17 @@
       <form action="/cart/add" method="post" id="AddForm">
         <input type="hidden" name="id" id="VariantId" value="{{ v.id }}">
         <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="product__btn product__btn--buy" id="BuyBtn">
+        <button type="submit" id="BuyBtn" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:12px;padding:18px 20px;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 0 28px rgba(124,58,237,.5);">
           <span id="BuyLabel">BUY NOW</span>
-          <span id="BuyPrice">{{ v.price | money }}</span>
+          <span id="BuyPrice">{{ show_price }}</span>
         </button>
       </form>
 
       <p class="product__guarantee">🛡️ 30-day money-back guarantee · Risk-free</p>
-
       <div class="product__trust">
         <span>🔒 Secure checkout</span>
         <span>🚚 Free US shipping $50+</span>
         <span>📦 Delivery 5–10 business days</span>
-      </div>
-
-      <div class="product__pay">
-        <span>Visa</span><span>Mastercard</span><span>Amex</span><span>PayPal</span><span>Shop Pay</span>
       </div>
     </div>
   </div>
@@ -110,20 +111,19 @@
 
   <div class="product__faq">
     <h2>FAQ</h2>
-    <details><summary>How long does shipping take?</summary><p>Standard US delivery is typically 5–10 business days after the order ships. Free shipping on orders $50+.</p></details>
+    <details><summary>How long does shipping take?</summary><p>Standard US delivery is typically 5–10 business days. Free shipping on orders $50+.</p></details>
     <details><summary>How do I use it?</summary><p>Place on a desk, connect USB, turn on.</p></details>
-    <details><summary>Which pack?</summary><p>1 Pack to try. Larger packs for gifts or multiple rooms.</p></details>
     <details><summary>Returns?</summary><p>30-day returns for unused items in original packaging.</p></details>
   </div>
 </section>
 
-<div class="product__sticky" id="StickyBuy">
-  <div class="product__sticky-inner">
-    <div class="product__sticky-price">
-      <strong id="StickyPrice">{{ v.price | money }}</strong>
-      {% if v.compare_at_price > v.price %}<span id="StickyCompare">{{ v.compare_at_price | money }}</span>{% else %}<span id="StickyCompare" style="display:none"></span>{% endif %}
+<div id="StickyBuy" style="position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(10,11,15,.96);border-top:1px solid #1f2330;padding:12px 16px;transform:translateY(110%);transition:transform .25s ease;">
+  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+    <div>
+      <strong id="StickyPrice" style="font-size:24px;font-weight:900;color:#fff;">{{ show_price }}</strong>
+      {% if show_compare %}<span id="StickyCompare" style="font-size:14px;color:#9ca3af;text-decoration:line-through;margin-left:8px;">{{ show_compare }}</span>{% else %}<span id="StickyCompare" style="display:none;"></span>{% endif %}
     </div>
-    <button type="button" class="product__btn product__btn--buy" id="StickyBtn">BUY NOW</button>
+    <button type="button" id="StickyBtn" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:10px;padding:14px 24px;font-size:15px;font-weight:800;cursor:pointer;">BUY NOW</button>
   </div>
 </div>
 
@@ -140,24 +140,17 @@
   var stickyPrice=document.getElementById('StickyPrice');
   var stickyCompare=document.getElementById('StickyCompare');
   var stickyBtn=document.getElementById('StickyBtn');
+  var sticky=document.getElementById('StickyBuy');
+  var priceBox=document.getElementById('PriceBox');
   var mainImg=document.getElementById('MainImage');
 
   function setPrice(p,c,s){
-    if(priceEl){ priceEl.textContent=p; priceEl.className='product__price'; }
-    if(buyPrice) buyPrice.textContent=p;
-    if(stickyPrice) stickyPrice.textContent=p;
-    if(compareEl){
-      if(c){ compareEl.textContent=c; compareEl.style.display=''; compareEl.className='product__compare'; }
-      else { compareEl.style.display='none'; }
-    }
-    if(stickyCompare){
-      if(c){ stickyCompare.textContent=c; stickyCompare.style.display=''; }
-      else { stickyCompare.style.display='none'; }
-    }
-    if(saveEl){
-      if(s){ saveEl.textContent=s; saveEl.style.display=''; }
-      else { saveEl.style.display='none'; }
-    }
+    if(priceEl) priceEl.textContent=p||priceEl.textContent;
+    if(buyPrice) buyPrice.textContent=p||buyPrice.textContent;
+    if(stickyPrice) stickyPrice.textContent=p||stickyPrice.textContent;
+    if(compareEl){ if(c){compareEl.textContent=c;compareEl.style.display='inline';} else {compareEl.style.display='none';} }
+    if(stickyCompare){ if(c){stickyCompare.textContent=c;stickyCompare.style.display='inline';} else {stickyCompare.style.display='none';} }
+    if(saveEl){ if(s){saveEl.textContent=s;saveEl.style.display='inline-block';} else {saveEl.style.display='none';} }
   }
 
   function buyNow(e){
@@ -169,42 +162,37 @@
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({items:[{id:Number(variantId.value),quantity:1}]})
-    }).then(function(r){ if(!r.ok) throw new Error('x'); return r.json(); })
-      .then(function(){ window.location.href='/checkout'; })
-      .catch(function(){
-        var i=document.createElement('input'); i.type='hidden'; i.name='return_to'; i.value='/checkout';
-        form.appendChild(i); form.submit();
-      });
+    }).then(function(r){if(!r.ok)throw new Error('x');return r.json();})
+      .then(function(){window.location.href='/checkout';})
+      .catch(function(){var i=document.createElement('input');i.type='hidden';i.name='return_to';i.value='/checkout';form.appendChild(i);form.submit();});
   }
 
-  form.addEventListener('submit', buyNow);
-  if(stickyBtn) stickyBtn.addEventListener('click', buyNow);
+  form.addEventListener('submit',buyNow);
+  if(stickyBtn) stickyBtn.addEventListener('click',buyNow);
 
   document.querySelectorAll('#Options .product__option').forEach(function(btnOpt){
-    btnOpt.addEventListener('click', function(){
-      document.querySelectorAll('#Options .product__option').forEach(function(b){ b.classList.remove('is-active'); });
+    btnOpt.addEventListener('click',function(){
+      document.querySelectorAll('#Options .product__option').forEach(function(b){b.classList.remove('is-active');});
       btnOpt.classList.add('is-active');
       variantId.value=btnOpt.getAttribute('data-id');
-      setPrice(btnOpt.getAttribute('data-price')||'', btnOpt.getAttribute('data-compare')||'', btnOpt.getAttribute('data-save')||'');
+      setPrice(btnOpt.getAttribute('data-price')||'',btnOpt.getAttribute('data-compare')||'',btnOpt.getAttribute('data-save')||'');
     });
   });
 
   document.querySelectorAll('#Thumbs .product__thumb').forEach(function(thumb){
-    thumb.addEventListener('click', function(){
-      document.querySelectorAll('#Thumbs .product__thumb').forEach(function(t){ t.classList.remove('is-active'); });
+    thumb.addEventListener('click',function(){
+      document.querySelectorAll('#Thumbs .product__thumb').forEach(function(t){t.classList.remove('is-active');});
       thumb.classList.add('is-active');
       var src=thumb.getAttribute('data-src');
-      if(mainImg&&src){ mainImg.style.opacity='0.35'; setTimeout(function(){ mainImg.src=src; mainImg.style.opacity='1'; },120); }
+      if(mainImg&&src){mainImg.style.opacity='0.35';setTimeout(function(){mainImg.src=src;mainImg.style.opacity='1';},120);}
     });
   });
 
-  var sticky=document.getElementById('StickyBuy');
-  var priceBox=document.getElementById('PriceBox');
   if(sticky&&priceBox){
-    window.addEventListener('scroll', function(){
-      if(priceBox.getBoundingClientRect().bottom<0) sticky.classList.add('is-show');
-      else sticky.classList.remove('is-show');
-    }, {passive:true});
+    window.addEventListener('scroll',function(){
+      if(priceBox.getBoundingClientRect().bottom<0) sticky.style.transform='translateY(0)';
+      else sticky.style.transform='translateY(110%)';
+    },{passive:true});
   }
 })();
 </script>
