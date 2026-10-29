@@ -1,0 +1,33 @@
+<section class="n-cart">
+  <h1>Your cart</h1>
+  {%- if cart.item_count == 0 -%}
+    <p class="n-cart__empty">Your cart is empty.</p>
+    <a class="n-hero__btn" href="/">Continue shopping</a>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post">
+      <ul class="n-cart__list">
+        {%- for item in cart.items -%}
+          <li class="n-cart__item">
+            {%- if item.image -%}
+              <img src="{{ item.image | image_url: width: 120 }}" alt="{{ item.title | escape }}" width="72" height="72">
+            {%- endif -%}
+            <div>
+              <p class="n-cart__title">{{ item.product.title }}</p>
+              <p class="n-cart__meta">{{ item.variant.title }} · Qty {{ item.quantity }}</p>
+              <p class="n-cart__price">{{ item.final_line_price | money }}</p>
+            </div>
+          </li>
+        {%- endfor -%}
+      </ul>
+      <p class="n-cart__total">Total: <strong>{{ cart.total_price | money }}</strong></p>
+      <button type="submit" name="checkout" class="product__btn">Checkout</button>
+    </form>
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "Nebula Cart",
+  "settings": []
+}
+{% endschema %}

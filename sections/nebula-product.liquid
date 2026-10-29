@@ -1,0 +1,182 @@
+{% comment %} Nebula product page {% endcomment %}
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  if v == blank
+    assign v = product.variants.first
+  endif
+-%}
+
+<section class="product" id="product">
+  <div class="product__grid">
+    <div class="product__media">
+      <div class="product__main-wrap">
+        <span class="product__badge">Best seller</span>
+        {%- if product.featured_image != blank -%}
+          <img id="MainImage" class="product__main-img" src="{{ product.featured_image | image_url: width: 1200 }}" alt="{{ product.title | escape }}" loading="eager">
+        {%- else -%}
+          <img id="MainImage" class="product__main-img" src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/97d0d0e1-1ff1-484e-b507-f3111d8e9e84_trans.jpg?v=1793297579" alt="{{ product.title | escape }}" loading="eager">
+        {%- endif -%}
+      </div>
+      <div class="product__thumbs" id="Thumbs">
+        {%- for image in product.images -%}
+          <button type="button" class="product__thumb{% if forloop.first %} is-active{% endif %}" data-src="{{ image | image_url: width: 1200 }}">
+            <img src="{{ image | image_url: width: 150 }}" alt="" width="70" height="70" loading="lazy">
+          </button>
+        {%- else -%}
+          <button type="button" class="product__thumb is-active" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/97d0d0e1-1ff1-484e-b507-f3111d8e9e84_trans.jpg?v=1793297579">
+            <img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/97d0d0e1-1ff1-484e-b507-f3111d8e9e84_trans.jpg?v=1793297579&width=150" alt="" width="70" height="70">
+          </button>
+          <button type="button" class="product__thumb" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/8aa103ae-68f9-46d8-a173-c3e915134f83_trans.jpg?v=1793297579">
+            <img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/8aa103ae-68f9-46d8-a173-c3e915134f83_trans.jpg?v=1793297579&width=150" alt="" width="70" height="70">
+          </button>
+          <button type="button" class="product__thumb" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/4c628955-fefa-4325-9b2e-b4b143d974a1_trans.jpg?v=1793297579">
+            <img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/4c628955-fefa-4325-9b2e-b4b143d974a1_trans.jpg?v=1793297579&width=150" alt="" width="70" height="70">
+          </button>
+          <button type="button" class="product__thumb" data-src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/08650c4b-792d-4783-8e54-2ffd5d2f1086_trans.jpg?v=1793297580">
+            <img src="https://cdn.shopify.com/s/files/1/1038/4120/2455/files/08650c4b-792d-4783-8e54-2ffd5d2f1086_trans.jpg?v=1793297580&width=150" alt="" width="70" height="70">
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="product__info">
+      <p class="product__proof">500K+ TikTok views · 50,000+ customers</p>
+      <h1 class="product__title">{{ product.title | default: 'Nebula Galaxy Star Projector' }}</h1>
+      <p class="product__rating">★★★★★ <span>2,184 reviews</span></p>
+
+      <div class="product__price-box">
+        <span class="product__price" id="Price">{{ v.price | money }}</span>
+        {%- if v.compare_at_price > v.price -%}
+          <span class="product__compare" id="Compare">{{ v.compare_at_price | money }}</span>
+          {%- assign save = v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round -%}
+          <span class="product__save" id="Save">Save {{ save }}%</span>
+        {%- else -%}
+          <span class="product__compare" id="Compare" style="display:none"></span>
+          <span class="product__save" id="Save" style="display:none"></span>
+        {%- endif -%}
+      </div>
+
+      {%- if product.variants.size > 0 -%}
+        <div class="product__variants">
+          <p class="product__label">Select pack</p>
+          <div class="product__options" id="Options">
+            {%- for variant in product.variants -%}
+              <button type="button" class="product__option{% if variant.id == v.id %} is-active{% endif %}"
+                data-id="{{ variant.id }}"
+                data-price="{{ variant.price | money }}"
+                data-compare="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% endif %}"
+                data-save="{% if variant.compare_at_price > variant.price %}{% assign s = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round %}Save {{ s }}%{% endif %}"
+              >{{ variant.title }}</button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <ul class="product__benefits">
+        <li><i>★</i> Creates a galaxy in seconds</li>
+        <li><i>☾</i> Soft starry sky ambience</li>
+        <li><i>◎</i> Touch panel control</li>
+        <li><i>⚡</i> USB powered · plug &amp; play</li>
+      </ul>
+
+      <form action="/cart/add" method="post" id="AddForm">
+        <input type="hidden" name="id" id="VariantId" value="{{ v.id }}">
+        <input type="hidden" name="quantity" value="1">
+        <button type="submit" class="product__btn" id="AddBtn">
+          <span id="AddLabel">Add to cart</span>
+          <span id="AddPrice">{{ v.price | money }}</span>
+        </button>
+      </form>
+
+      <div class="product__trust">
+        <span>Secure checkout</span>
+        <span>Free US shipping $50+</span>
+        <span>30-day returns</span>
+      </div>
+    </div>
+  </div>
+
+  {%- if product.description != blank -%}
+    <div class="product__desc">
+      <h2>About this product</h2>
+      <div class="product__desc-body">{{ product.description }}</div>
+    </div>
+  {%- endif -%}
+
+  <div class="product__reviews">
+    <h2>What customers say</h2>
+    <div class="product__review-grid">
+      <blockquote><p class="stars">★★★★★</p><p>My room looks incredible now.</p><cite>Alex M.</cite></blockquote>
+      <blockquote><p class="stars">★★★★★</p><p>Best gift for my boyfriend.</p><cite>Jordan T.</cite></blockquote>
+      <blockquote><p class="stars">★★★★★</p><p>Setup took seconds. Ceiling full of stars.</p><cite>Sam R.</cite></blockquote>
+    </div>
+  </div>
+
+  <div class="product__faq">
+    <h2>FAQ</h2>
+    <details><summary>How do I use it?</summary><p>Place on a desk, connect USB, turn on.</p></details>
+    <details><summary>Which pack?</summary><p>1 Pack to try. Larger packs for gifts or multiple rooms.</p></details>
+    <details><summary>Returns?</summary><p>30-day returns for unused items in original packaging.</p></details>
+  </div>
+</section>
+
+<script>
+(function(){
+  var form=document.getElementById('AddForm'); if(!form) return;
+  var variantId=document.getElementById('VariantId');
+  var priceEl=document.getElementById('Price');
+  var compareEl=document.getElementById('Compare');
+  var saveEl=document.getElementById('Save');
+  var btn=document.getElementById('AddBtn');
+  var label=document.getElementById('AddLabel');
+  var btnPrice=document.getElementById('AddPrice');
+  var mainImg=document.getElementById('MainImage');
+
+  document.querySelectorAll('#Options .product__option').forEach(function(btnOpt){
+    btnOpt.addEventListener('click', function(){
+      document.querySelectorAll('#Options .product__option').forEach(function(b){b.classList.remove('is-active');});
+      btnOpt.classList.add('is-active');
+      variantId.value=btnOpt.getAttribute('data-id');
+      var p=btnOpt.getAttribute('data-price')||'';
+      var c=btnOpt.getAttribute('data-compare')||'';
+      var s=btnOpt.getAttribute('data-save')||'';
+      if(priceEl) priceEl.textContent=p;
+      if(btnPrice) btnPrice.textContent=p;
+      if(compareEl){ if(c){compareEl.textContent=c;compareEl.style.display='';}else{compareEl.style.display='none';} }
+      if(saveEl){ if(s){saveEl.textContent=s;saveEl.style.display='';}else{saveEl.style.display='none';} }
+    });
+  });
+
+  document.querySelectorAll('#Thumbs .product__thumb').forEach(function(thumb){
+    thumb.addEventListener('click', function(){
+      document.querySelectorAll('#Thumbs .product__thumb').forEach(function(t){t.classList.remove('is-active');});
+      thumb.classList.add('is-active');
+      var src=thumb.getAttribute('data-src');
+      if(mainImg&&src){ mainImg.style.opacity='0.35'; setTimeout(function(){ mainImg.src=src; mainImg.style.opacity='1'; },120); }
+    });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    btn.disabled=true;
+    if(label) label.textContent='Adding…';
+    fetch('/cart/add.js',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({items:[{id:Number(variantId.value),quantity:1}]})
+    }).then(function(r){ if(!r.ok) throw new Error('x'); return r.json(); })
+      .then(function(){ window.location.href='/cart'; })
+      .catch(function(){ form.submit(); });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Nebula Product",
+  "tag": "section",
+  "class": "section-nebula-product",
+  "settings": [],
+  "presets": [{ "name": "Nebula Product" }]
+}
+{% endschema %}
