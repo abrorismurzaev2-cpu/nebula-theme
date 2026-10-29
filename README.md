@@ -1,15 +1,11 @@
 # Nebula Theme
 
-Shopify theme for **Nebula** — Galaxy Star Projectors.
+## CRITICAL — Publish Nebula CRO
+In Shopify Admin:
+1. Online Store → Themes
+2. Find **Nebula CRO**
+3. Click **Publish**
 
-## Connect to Shopify
-1. Online Store → Themes → Add theme → Connect from GitHub
-2. Select `abrorismurzaev2-cpu/nebula-theme` branch `main`
-3. Publish the theme
+Until you publish Nebula CRO, the live site (theme "Nebula") will NOT show price, variants, or new photos.
 
-## Product page
-- Gallery + thumbs
-- Price + compare-at
-- Variant buttons
-- Add to cart (AJAX)
-- Description, reviews, FAQ
+Repo: https://github.com/abrorismurzaev2-cpu/nebula-theme
